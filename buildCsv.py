@@ -3,10 +3,11 @@
 from json import *
 import codecs
 import sys
+import re
 
 inf = '_init.json'
 ouf = '_全船表.csv'
-serverList = ['cn','jp','tw']
+serverList = ['cn','jp','tw','cn_cbt','tw_cbt']
 
 
 if len(sys.argv) == 1 or sys.argv[1] not in serverList :
@@ -17,13 +18,19 @@ outF = sys.argv[1]+ouf
 with open(inF,'r') as f:
 	j = loads(f.read())
 
-countryList = ['未知','日本','德国','英国','美国','意大利','法国','苏联','中国','深海','深海','土耳其','荷兰','瑞典','泰国','澳大利亚','加拿大','蒙古','冰岛','智利','芬兰','波兰','奥匈帝国','希腊']
+countryList = ['未知','日本','德国','英国','美国','意大利','法国','苏联','中国','深海','深海','土耳其','荷兰','瑞典','泰国','澳大利亚','加拿大','蒙古','冰岛','智利','芬兰','波兰','奥匈帝国','希腊','西班牙']
 shipTypeList = {1:'航母',2:'轻母',3:'装母',4:'战列',5:'航战',6:'战巡',7:'重巡',8:'航巡',9:'雷巡',10:'轻巡',11:'重炮',12:'驱逐',13:'潜母',14:'潜艇',15:'炮潜',16:'补给',23:'导驱'}
 shipTonList = ['未知','小型','中型','大型']
 rangeList = ['无','短','中','长','超长']
 printList = []
-printList.append("编号,船名,国籍,稀有度,舰种,舰级,耐久,火力,护甲,鱼雷,防空,对潜,索敌,闪避,命中,幸运,航速,搭载,射程,船型,装备槽,装备,消耗油,消耗弹,维修油,维修钢,维修时间,分解资源(油弹钢铝),强化经验(火雷甲空)")
+printList.append("编号,船名,国籍,稀有度,舰种,舰级,耐久,火力,护甲,鱼雷,防空,对潜,索敌,闪避,命中,幸运,航速,搭载,射程,船型,装备槽,装备,消耗油,消耗弹,维修油,维修钢,维修时间,分解资源(油弹钢铝),强化经验(火雷甲空),技能1(3级),技能2(3级)")
+skillDic = {}
+for skill in j["shipSkil1"] :
+	if (skill["skillLevel"] == 3) :
+#		print("a skill put in dic")
+		skillDic[skill["skillType"]] = skill["desc"];
 equipDic = {};
+#print(skillDic)
 for equipmnt in j["shipEquipmnt"] :
 	equipDic[equipmnt["cid"]] = equipmnt["title"]
 
@@ -109,7 +116,19 @@ for shipCard in j["shipCardWu"]:
 	supplyExp.append(str(shipCard["strengthenSupplyExp"]["air_def"]))
 	supply = '|'.join(supplyExp)
 	data = ','.join((data, supply))
-
+	runner = 0;
+	for skillID in shipCard["skills"] :
+		skillDesc = skillDic.get(skillID)
+		skillDesc = re.sub(r',', r'，', skillDesc)
+		r2 = 0
+		while r2 < 5:
+			skillDesc = re.sub(r'C454545FF00000000', r'', skillDesc)
+			skillDesc = re.sub(r'C1C8BE5FF00000000', r'', skillDesc)
+			skillDesc = re.sub(r'CFF9186FF442424FF', r'', skillDesc)
+			skillDesc = re.sub(r'CEB867CFF00000000', r'', skillDesc)
+#			skillDesc = re.sub(r'', r'', skillDesc)
+			r2 += 1
+		data = ','.join((data, skillDesc))
 	printList.append(data)
 
 out = codecs.open(outF,'w','utf_8_sig');
