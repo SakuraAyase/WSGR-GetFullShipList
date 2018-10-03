@@ -2,7 +2,7 @@
 
 echo -------战舰少女船只列表自动生成工具-------
 
-#wget -O cn_init.json http://version.jr.moefantasy.com/index/getInitConfigs
+wget -O cn_init.json http://version.jr.moefantasy.com/index/getInitConfigs
 #wget -O cn_cbt_init.json http://cbt.jianniang.com/index/getInitConfigs
 #wget -O cn_cbt_init.json http://500cbt.jianniang.com/index/getInitConfigs
 wget -O jp_init.json http://version.jp.warshipgirls.com/index/getInitConfigs
